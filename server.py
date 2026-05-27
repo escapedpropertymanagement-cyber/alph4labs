@@ -33,13 +33,14 @@ WC_BASE        = "https://alph4labs.com/wp-json/wc/v3"
 HERE = Path(__file__).parent.resolve()
 DASHBOARD = HERE / "dashboard.html"
 
-if not CK or not CS:
-    sys.stderr.write(
-        "ERROR: WC_CONSUMER_KEY and WC_CONSUMER_SECRET must be set as environment variables.\n"
-        "  Local dev:  export AUTH_USER=alph4 AUTH_PASS=test WC_CONSUMER_KEY=ck_... WC_CONSUMER_SECRET=cs_...\n"
-        "  Railway/Render: set them in the Variables tab.\n"
-    )
-    sys.exit(1)
+MISSING_VARS = [n for n, v in [
+    ("WC_CONSUMER_KEY", CK),
+    ("WC_CONSUMER_SECRET", CS),
+] if not v]
+
+if MISSING_VARS:
+    print(f"⚠ Missing env vars: {', '.join(MISSING_VARS)}", file=sys.stderr)
+    print("  Server will start in setup mode — set these in Railway → Variables tab.", file=sys.stderr)
 
 if not AUTH_PASS:
     print("⚠ AUTH_PASS missing — generating an ephemeral password for this run.", file=sys.stderr)
@@ -47,6 +48,41 @@ if not AUTH_PASS:
     print(f"  Username: {AUTH_USER}  Password: {AUTH_PASS}", file=sys.stderr)
 
 EXPECTED_AUTH = "Basic " + base64.b64encode(f"{AUTH_USER}:{AUTH_PASS}".encode()).decode()
+
+SETUP_PAGE = """<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Alph4 Labs Ops — Setup needed</title>
+<style>
+  body { margin: 0; background: #08091A; color: #F4F6FC; font-family: -apple-system, sans-serif; min-height: 100vh; display: grid; place-items: center; padding: 40px; }
+  .card { max-width: 600px; background: #0F1226; border: 1px solid #1F2447; border-radius: 16px; padding: 48px 40px; }
+  h1 { font-size: 28px; margin: 0 0 8px; color: white; font-weight: 500; }
+  .tag { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #F87171; font-weight: 600; margin-bottom: 24px; }
+  p { color: #A0AAD0; line-height: 1.6; margin: 0 0 16px; }
+  ol { color: #A0AAD0; line-height: 1.8; padding-left: 20px; }
+  code { background: #161B3F; color: #B4C8FF; padding: 3px 8px; border-radius: 4px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; }
+  ul { color: #A0AAD0; line-height: 1.8; padding-left: 20px; margin-top: 8px; }
+  .check { color: #34D399; }
+  .miss { color: #F87171; }
+</style>
+</head><body>
+<div class="card">
+  <div class="tag">● Setup required</div>
+  <h1>Alph4 Labs Ops · setup needed</h1>
+  <p>The server is running but missing WooCommerce API credentials.</p>
+  <ol>
+    <li>Go to your Railway project → <b>Variables</b> tab</li>
+    <li>Add these env vars (click <b>+ New Variable</b> for each):
+      <ul>
+        <li><code>WC_CONSUMER_KEY</code> &mdash; your <code>ck_…</code> key</li>
+        <li><code>WC_CONSUMER_SECRET</code> &mdash; your <code>cs_…</code> secret</li>
+        <li><code>AUTH_USER</code> &mdash; login username (e.g. <code>alph4</code>)</li>
+        <li><code>AUTH_PASS</code> &mdash; a strong password</li>
+      </ul>
+    </li>
+    <li>Railway auto-redeploys in ~30s</li>
+    <li>Hard-refresh this page</li>
+  </ol>
+</div>
+</body></html>"""
 
 _last_built = 0.0
 
@@ -120,7 +156,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
         # Health probe (no auth, for Railway/Render)
         if parsed.path == "/health":
-            self._json(200, {"ok": True, "service": "alph4-ops"})
+            self._json(200, {"ok": True, "service": "alph4-ops", "missing_env": MISSING_VARS})
+            return
+
+        # If env vars are missing, show a setup page instead of normal auth flow
+        if MISSING_VARS and parsed.path in ("/", "/index.html", "/dashboard.html"):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(SETUP_PAGE.encode())
             return
 
         if not self._require_auth():
