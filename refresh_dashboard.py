@@ -105,18 +105,21 @@ for o in orders:
         "country": b.get("country", ""), "city": b.get("city", ""),
     })
 
-# If tracker spreadsheet was loaded, use it as truth. Otherwise fall back to WC status:
-#   on-hold      → UNPAID (awaiting bank transfer)
-#   processing   → PAID   (transfer received, awaiting ship)
-#   completed    → PAID   (paid + shipped + done)
-if tracker_status:
-    paid   = [c for c in rows if c["tracker_status"] == "PAID"]
-    unpaid = [c for c in rows if c["tracker_status"] == "UNPAID"]
-else:
-    paid   = [c for c in rows if c["wc_status"] in ("processing", "completed")]
-    unpaid = [c for c in rows if c["wc_status"] in ("on-hold", "pending")]
-cancelled = [c for c in rows if c["wc_status"] in ("cancelled", "failed")]
-active    = paid + unpaid
+# Classify each order: spreadsheet wins if it has an entry (yesterday's truth),
+# else fall back to WC status (for orders newer than the spreadsheet).
+def classify(c):
+    if c.get("tracker_status"):
+        return c["tracker_status"]  # PAID or UNPAID from spreadsheet
+    if c["wc_status"] in ("processing", "completed"):
+        return "PAID"
+    if c["wc_status"] in ("on-hold", "pending"):
+        return "UNPAID"
+    return None  # cancelled / failed / refunded
+
+paid   = [c for c in rows if classify(c) == "PAID"]
+unpaid = [c for c in rows if classify(c) == "UNPAID"]
+cancelled = [c for c in rows if c["wc_status"] in ("cancelled", "failed", "refunded")]
+active = paid + unpaid
 
 # Metrics
 total_value   = sum(c["total"] for c in active)
@@ -414,6 +417,8 @@ out += f"""<!DOCTYPE html>
   .a.wa:hover {{ background: #1FB856; }}
   .a.email {{ background: var(--bg-card-2); color: var(--periwinkle); border: 1px solid var(--line); }}
   .a.email:hover {{ background: var(--accent); color: white; border-color: var(--accent); }}
+  .a.a-inv {{ background: var(--bg-card-2); color: var(--periwinkle); border: 1px solid var(--line); }}
+  .a.a-inv:hover {{ background: var(--accent); color: white; border-color: var(--accent); }}
   .done {{ background: var(--good-soft); color: var(--good); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 500; }}
 
   /* COUNTRY + PRODUCT mini-tables */
@@ -618,7 +623,7 @@ for c in sorted(unpaid, key=sort_key):
     email_body = f"Hi {first_name},\n\nFriendly reminder that order #{c['id']} for €{c['total']:.2f} is still awaiting payment.\n\nOnce we receive your bank transfer we will dispatch the same business day.\n\nReply if you need the bank details resent.\n\nThanks,\nAlph4 Labs"
     email_url = f"mailto:{c['email']}?subject={qp(email_subj)}&body={qp(email_body)}" if c['email'] else ""
 
-    acts = ""
+    acts = f'<a class="a a-inv" href="/api/invoice/{c["id"]}.pdf" target="_blank" rel="noopener" title="Open invoice PDF">📄</a>'
     if wa_url: acts += f'<a class="a wa" href="{wa_url}" target="_blank" rel="noopener">WhatsApp</a>'
     if email_url: acts += f'<a class="a email" href="{email_url}">Email</a>'
     acts += f'<button class="a mark" data-id="{c["id"]}" data-name="{e(c["name"])}" data-total="{c["total"]:.2f}">Got paid</button>'

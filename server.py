@@ -186,6 +186,34 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(503, "Dashboard not yet generated — refresh in a few seconds")
                 return
 
+        # Invoice PDF endpoint: GET /api/invoice/{order_id}.pdf
+        parts = parsed.path.strip("/").split("/")
+        if len(parts) == 3 and parts[0] == "api" and parts[1] == "invoice" and parts[2].endswith(".pdf"):
+            order_id = parts[2][:-4]
+            if not order_id.isdigit():
+                self.send_error(400, "Invalid order id")
+                return
+            try:
+                # Lazy-load to avoid reportlab import at module load if unused
+                from invoice_pdf import build_invoice_pdf
+                url = f"{WC_BASE}/orders/{order_id}"
+                creds = base64.b64encode(f"{CK}:{CS}".encode()).decode()
+                req = urllib.request.Request(url)
+                req.add_header("Authorization", f"Basic {creds}")
+                with urllib.request.urlopen(req, timeout=20) as r:
+                    order = json.loads(r.read().decode())
+                pdf_bytes = build_invoice_pdf(order)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/pdf")
+                self.send_header("Content-Disposition", f'inline; filename="alph4_invoice_{order_id}.pdf"')
+                self.send_header("Content-Length", str(len(pdf_bytes)))
+                self.end_headers()
+                self.wfile.write(pdf_bytes)
+                return
+            except Exception as e:
+                self.send_error(500, f"Invoice error: {e}")
+                return
+
         # Static files (img/, etc.) — fall through to SimpleHTTPRequestHandler
         super().do_GET()
 

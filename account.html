@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My account — Alph4 Labs</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: { bg:'#0F172A','bg-soft':'#1E293B',ink:'#020617','ink-muted':'#CBD5E1','ink-faint':'#64748B',line:'#334155',accent:'#0F25D5','accent-hover':'#3F99EE',gold:'#A8BEF1',cream:'#FFFFFF' },
+    fontFamily: { serif:['Fraunces','serif'], sans:['Inter','sans-serif'], mono:['JetBrains Mono','monospace'] },
+    maxWidth: { 'screen-3xl': '1320px' } } } }
+</script>
+<style>
+  html, body { background: #0F172A; color: #CBD5E1; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, h4, h5, h6 { color: #FFFFFF; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #CBD5E1; font-weight: 500; }
+  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.95rem 1.6rem; border-radius: 999px; font-size: 14px; font-weight: 500; transition: all 200ms ease; cursor: pointer; }
+  .btn-primary { background: #0F25D5; color: #FFFFFF; }
+  .btn-primary:hover { background: #3F99EE; }
+  .hairline { border-color: #334155; }
+  .dark-section { background: #020294; color: #FFFFFF; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; letter-spacing: 0.04em; text-transform: lowercase; }
+  .pill::before { content:''; width: 6px; height: 6px; border-radius: 50%; }
+  .pill-paid { background: rgba(16,185,129,0.12); color: #10B981; }
+  .pill-paid::before { background: #10B981; }
+  .pill-unpaid { background: rgba(251,191,36,0.12); color: #FBBF24; }
+  .pill-unpaid::before { background: #FBBF24; }
+  .pill-shipped { background: rgba(63,153,238,0.12); color: #3F99EE; }
+  .pill-shipped::before { background: #3F99EE; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<header class="sticky top-0 z-40 border-b hairline backdrop-blur" style="background: rgba(15, 23, 42, 0.85);">
+  <div class="max-w-screen-3xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-baseline gap-2">
+      <span class="font-serif text-2xl tracking-tight">Alph4</span>
+      <span class="font-serif italic text-2xl text-accent">labs</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-sm">
+      <a href="shop.html" class="hover:text-accent">Catalogue</a>
+      <a href="research.html" class="hover:text-accent">Research</a>
+      <a href="about.html" class="hover:text-accent">About</a>
+      <a href="account.html" class="text-accent">My account</a>
+    </nav>
+    <a href="shop.html" class="btn btn-primary text-xs px-5 py-2">Order</a>
+  </div>
+  <div class="border-t hairline bg-ink text-cream/90">
+    <div class="max-w-screen-3xl mx-auto px-6 lg:px-10 py-1.5 text-[11px] tracking-wider uppercase flex flex-wrap items-center gap-x-6 gap-y-1 justify-center">
+      <span>For laboratory research only · Not for human consumption</span><span class="opacity-50">·</span>
+      <span>Shipped from Gibraltar</span><span class="opacity-50">·</span>
+      <span>HPLC verified · &gt;99% purity</span>
+    </div>
+  </div>
+</header>
+
+<main class="flex-1">
+  <section class="max-w-screen-3xl mx-auto px-6 lg:px-10 pt-16 pb-12 border-b hairline">
+    <div class="eyebrow">My account</div>
+    <h1 class="font-serif text-5xl md:text-6xl mt-4 leading-[1.05]">Welcome back, Joel.</h1>
+    <p class="mt-6 text-ink-muted">Track your research orders, download invoices, and request COAs for prior shipments.</p>
+  </section>
+
+  <section class="max-w-screen-3xl mx-auto px-6 lg:px-10 pt-12 pb-24">
+    <div class="flex items-end justify-between mb-8">
+      <h2 class="font-serif text-3xl">Order history</h2>
+      <div class="text-sm text-ink-faint">3 orders · 2 paid</div>
+    </div>
+
+    <div class="space-y-3">
+      <!-- Order row 1 -->
+      <article class="border hairline rounded-sm p-6 grid grid-cols-12 gap-4 items-center">
+        <div class="col-span-12 md:col-span-3">
+          <div class="font-mono text-xs text-ink-faint">#2832 · 27 May 2026</div>
+          <div class="font-serif text-xl mt-1 text-cream">Retatrutide + Bac Water</div>
+          <div class="text-xs text-ink-faint mt-1">1 unit · €128.40</div>
+        </div>
+        <div class="col-span-6 md:col-span-3">
+          <span class="pill pill-unpaid">awaiting payment</span>
+          <div class="text-xs text-ink-faint mt-2">Bank transfer expected</div>
+        </div>
+        <div class="col-span-6 md:col-span-3 text-sm text-ink-muted">
+          Sant Vicenç dels Horts<br><span class="text-ink-faint text-xs">Carrer de Valls, 5</span>
+        </div>
+        <div class="col-span-12 md:col-span-3 flex gap-2 md:justify-end flex-wrap">
+          <a href="/api/invoice/2832.pdf" class="btn btn-primary text-xs px-4 py-2">📄 Invoice</a>
+          <a href="mailto:sales@alph4labs.com?subject=Order%20%232832%20question" class="text-xs px-4 py-2 rounded-full border hairline text-cream hover:bg-accent hover:border-accent">Contact</a>
+        </div>
+      </article>
+
+      <!-- Order row 2 -->
+      <article class="border hairline rounded-sm p-6 grid grid-cols-12 gap-4 items-center">
+        <div class="col-span-12 md:col-span-3">
+          <div class="font-mono text-xs text-ink-faint">#2826 · 27 May 2026</div>
+          <div class="font-serif text-xl mt-1 text-cream">Retatrutide + Bac Water</div>
+          <div class="text-xs text-ink-faint mt-1">1 unit · €128.40</div>
+        </div>
+        <div class="col-span-6 md:col-span-3">
+          <span class="pill pill-paid">paid</span>
+          <div class="text-xs text-ink-faint mt-2">Bank transfer received</div>
+        </div>
+        <div class="col-span-6 md:col-span-3 text-sm text-ink-muted">
+          Isla Cristina<br><span class="text-ink-faint text-xs">Lirio 94-1</span>
+        </div>
+        <div class="col-span-12 md:col-span-3 flex gap-2 md:justify-end flex-wrap">
+          <a href="/api/invoice/2826.pdf" class="btn btn-primary text-xs px-4 py-2">📄 Invoice</a>
+          <a href="mailto:sales@alph4labs.com?subject=COA%20request%20order%20%232826" class="text-xs px-4 py-2 rounded-full border hairline text-cream hover:bg-accent hover:border-accent">Request COA</a>
+        </div>
+      </article>
+
+      <!-- Order row 3 -->
+      <article class="border hairline rounded-sm p-6 grid grid-cols-12 gap-4 items-center">
+        <div class="col-span-12 md:col-span-3">
+          <div class="font-mono text-xs text-ink-faint">#2729 · 22 May 2026</div>
+          <div class="font-serif text-xl mt-1 text-cream">Retatrutide + Bac Water</div>
+          <div class="text-xs text-ink-faint mt-1">1 unit · €100.00</div>
+        </div>
+        <div class="col-span-6 md:col-span-3">
+          <span class="pill pill-shipped">shipped</span>
+          <div class="text-xs text-ink-faint mt-2">Dispatched 23 May</div>
+        </div>
+        <div class="col-span-6 md:col-span-3 text-sm text-ink-muted">
+          Manilva<br><span class="text-ink-faint text-xs">Calle Bolivia 12</span>
+        </div>
+        <div class="col-span-12 md:col-span-3 flex gap-2 md:justify-end flex-wrap">
+          <a href="/api/invoice/2729.pdf" class="btn btn-primary text-xs px-4 py-2">📄 Invoice</a>
+          <a href="mailto:sales@alph4labs.com?subject=COA%20request%20order%20%232729" class="text-xs px-4 py-2 rounded-full border hairline text-cream hover:bg-accent hover:border-accent">Request COA</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="mt-10 p-6 border hairline rounded-sm bg-bg-soft text-sm leading-relaxed">
+      <strong class="text-cream">Invoices &amp; certificates of analysis</strong> are available for every order. Click the <span class="font-mono text-accent">📄 Invoice</span> button to download a PDF. To request a Certificate of Analysis (COA) for a specific lot, click <em>Request COA</em> and our lab will reply within one business day.
+    </div>
+  </section>
+</main>
+
+<footer class="dark-section mt-32">
+  <div class="max-w-screen-3xl mx-auto px-6 lg:px-10 pt-20 pb-12">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-6">
+      <div class="md:col-span-5">
+        <div class="font-serif text-3xl">Alph4<span class="italic text-gold"> labs</span></div>
+        <p class="mt-5 max-w-md text-sm leading-relaxed text-cream/70">Precision-synthesised research peptides manufactured to laboratory standards. Shipped from Gibraltar to research customers worldwide.</p>
+        <p class="mt-6 eyebrow">For laboratory research only. Not for human consumption.</p>
+      </div>
+      <div class="md:col-span-7">
+        <div class="eyebrow mb-4">Get in touch</div>
+        <p class="text-sm leading-relaxed text-cream/80">Forbes Building<br />19 Devil's Tower Rd<br />Gibraltar GX11 1AA</p>
+        <p class="mt-4 text-sm"><a href="mailto:sales@alph4labs.com" class="hover:text-gold underline-offset-4 hover:underline">sales@alph4labs.com</a></p>
+      </div>
+    </div>
+    <div class="mt-20 pt-8 border-t border-cream/15 flex flex-wrap justify-between items-center gap-3 text-xs text-cream/50">
+      <div>© 2026 Alph4 Labs. All rights reserved.</div>
+      <div><a href="disclaimer.html" class="hover:text-gold">Research-use disclaimer</a></div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
